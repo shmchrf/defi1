@@ -1,0 +1,131 @@
+{% extends 'planning/base.html' %}
+{% block content %}
+
+<h1 class="text-center mt-5">Gestion des Affectations</h1>
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalAffectation">Ajouter une Affectation</button>
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Enseignant</th>
+            <th>Matière</th>
+            <th>Groupe</th>
+            <th>Type de Cours</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="affectationTable">
+        {% for affectation in affectations %}
+        <tr>
+            <td>{{ affectation.enseignant.nom }}</td>
+            <td>{{ affectation.matiere.nom }}</td>
+            <td>{{ affectation.groupe.nom }}</td>
+            <td>{{ affectation.type_cours }}</td>
+            <td>
+                <button class="btn btn-danger delete-affectation-btn" data-id="{{ affectation.id }}">🗑 Supprimer</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- MODAL AJOUT AFFECTATION -->
+<div class="modal fade" id="modalAffectation" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ajouter une Affectation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formAffectation">
+                    <div class="mb-3">
+                        <label>Enseignant</label>
+                        <select id="enseignant_id" class="form-control" required>
+                            <option value="">Sélectionner un enseignant</option>
+                            {% for enseignant in enseignants %}
+                                <option value="{{ enseignant.id }}">{{ enseignant.nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label>Matière</label>
+                        <select id="matiere_id" class="form-control" required>
+                            <option value="">Sélectionner une matière</option>
+                            {% for matiere in matieres %}
+                                <option value="{{ matiere.id }}">{{ matiere.nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label>Groupe</label>
+                        <select id="groupe_id" class="form-control" required>
+                            <option value="">Sélectionner un groupe</option>
+                            {% for groupe in groupes %}
+                                <option value="{{ groupe.id }}">{{ groupe.nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label>Type de Cours</label>
+                        <select id="type_cours" class="form-control" required>
+                            <option value="CM">CM</option>
+                            <option value="TD">TD</option>
+                            <option value="TP">TP</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function(){
+    $("#formAffectation").submit(function(event){
+        event.preventDefault();
+        let data = {
+            enseignant_id: $("#enseignant_id").val(),
+            matiere_id: $("#matiere_id").val(),
+            groupe_id: $("#groupe_id").val(),
+            type_cours: $("#type_cours").val()
+        };
+
+        $.ajax({
+            url: "{% url 'ajouter_affectation' %}",
+            type: "POST",
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            success: function(response){
+                alert(response.message);
+                location.reload();
+            }
+        });
+    });
+
+    $(".delete-affectation-btn").click(function(){
+        let affectationId = $(this).data("id");
+        if(confirm("Voulez-vous vraiment supprimer cette affectation ?")){
+            $.ajax({
+                url: "{% url 'supprimer_affectation' %}",
+                type: "POST",
+                data: JSON.stringify({"id": affectationId}),
+                contentType: "application/json",
+                success: function(response){
+                    alert(response.message);
+                    location.reload();
+                }
+            });
+        }
+    });
+});
+</script>
+
+{% endblock %}

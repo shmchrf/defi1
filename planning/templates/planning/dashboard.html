@@ -1,0 +1,65 @@
+{% extends "planning/base.html" %}
+{% block content %}
+<div class="container-fluid mt-5">
+    <h2 class="mb-4 text-center fw-bold">📊 Tableau de Bord</h2>
+
+    <!-- Statistiques -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white text-center p-3 shadow-sm rounded zoom-effect">
+                <h4>Matières</h4>
+                <p><i class="fas fa-book fa-lg"></i> {{ total_matieres }}</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white text-center p-3 shadow-sm rounded zoom-effect">
+                <h4>Enseignants</h4>
+                <p><i class="fas fa-chalkboard-teacher fa-lg"></i> {{ total_enseignants }}</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark text-center p-3 shadow-sm rounded zoom-effect">
+                <h4>Groupes</h4>
+                <p><i class="fas fa-users fa-lg"></i> {{ total_groupes }}</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white text-center p-3 shadow-sm rounded zoom-effect">
+                <h4>Salles</h4>
+                <p><i class="fas fa-door-open fa-lg"></i> {{ total_salles }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Derniers Emplois du Temps -->
+    <h3 class="mt-5 fw-bold">📅 Derniers Emplois du Temps</h3>
+    <div class="table-responsive">
+        <table class="table table-hover shadow-sm mt-3">
+            <thead class="table-dark">
+                <tr>
+                    <th>Groupe</th>
+                    <th>Enseignant</th>
+                    <th>Matière</th>
+                    <th>Salle</th>
+                    <th>Date & Heure</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emploi in dernier_emplois %}
+                <tr>
+                    <td>{{ emploi.groupe.nom }}</td>
+                    <td>{{ emploi.enseignant.nom }}</td>
+                    <td>{{ emploi.matiere.nom }}</td>
+                    <td>{{ emploi.salle.nom|default:"Non attribuée" }}</td>
+                    <td>{{ emploi.date_heure }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Aucun emploi du temps disponible.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

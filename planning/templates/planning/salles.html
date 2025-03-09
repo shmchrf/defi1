@@ -1,0 +1,64 @@
+{% extends "planning/base.html" %}
+{% block content %}
+<h2>Gestion des Salles</h2>
+
+<table class="table mt-5">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Capacité</th>
+            <th>Type</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for salle in salles %}
+        <tr>
+            <td>{{ salle.nom }}</td>
+            <td>{{ salle.capacite }}</td>
+            <td>{{ salle.type_salle }}</td>
+            <td>
+                <button onclick="modifierSalle('{{ salle.id }}')">Modifier</button>
+                <button onclick="supprimerSalle('{{ salle.id }}')">Supprimer</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<button onclick="ajouterSalle()">Ajouter une Salle</button>
+
+<script>
+function ajouterSalle() {
+    let nom = prompt("Nom de la salle :");
+    let capacite = prompt("Capacité :");
+    let type_salle = prompt("Type (CM/TD/TP) :");
+
+    fetch('/ajouter_salle/', {
+        method: 'POST',
+        body: JSON.stringify({nom, capacite, type_salle}),
+        headers: {'Content-Type': 'application/json'}
+    }).then(() => location.reload());
+}
+
+function modifierSalle(id) {
+    let nom = prompt("Nouveau nom :");
+    let capacite = prompt("Nouvelle capacité :");
+    let type_salle = prompt("Nouveau type (CM/TD/TP) :");
+
+    fetch('/modifier_salle/', {
+        method: 'POST',
+        body: JSON.stringify({id, nom, capacite, type_salle}),
+        headers: {'Content-Type': 'application/json'}
+    }).then(() => location.reload());
+}
+
+function supprimerSalle(id) {
+    fetch('/supprimer_salle/', {
+        method: 'POST',
+        body: JSON.stringify({id}),
+        headers: {'Content-Type': 'application/json'}
+    }).then(() => location.reload());
+}
+</script>
+{% endblock %}

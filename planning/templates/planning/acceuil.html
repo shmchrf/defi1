@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil</title>
+</head>
+<body>
+    <h1>Bienvenue sur l'application de planification</h1>
+    <a href="{% url 'gestion_matieres' %}">Gérer les matières</a>
+    <a href="{% url 'gestion_enseignants' %}">Gérer les enseignants</a>
+    <a href="{% url 'gestion_groupes' %}">Gérer les groupes</a>
+    <a href="{% url 'gestion_disponibilites' %}">Gérer les disponibilités</a>
+    <a href="{% url 'generer_edt' %}">Générer l'emploi du temps</a>
+    <a href="{% url 'exporter_excel' %}">Exporter en Excel</a>
+    <a href="{% url 'exporter_pdf' %}">Exporter en PDF</a>
+</body>
+</html>

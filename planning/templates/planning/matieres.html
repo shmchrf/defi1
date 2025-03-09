@@ -1,0 +1,203 @@
+{% extends 'planning/base.html' %}
+{% block content %}
+
+<h1 class="text-center mt-5">Gestion des Matières</h1>
+
+<!-- Bouton d'ajout -->
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalMatiere">➕ Ajouter une Matière</button>
+
+<!-- Tableau des matières -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Nom</th>
+            <th>Crédits</th>
+            <th>Semestre</th>
+            <th>Filière</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="matiereTable">
+        {% for matiere in matieres %}
+        <tr data-id="{{ matiere.id }}">
+            <td>{{ matiere.code }}</td>
+            <td>{{ matiere.nom }}</td>
+            <td>{{ matiere.credits }}</td>
+            <td>{{ matiere.semestre }}</td>
+            <td>{{ matiere.filiere }}</td>
+            <td>
+                <button class="btn btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#modalEditMatiere"
+                    data-id="{{ matiere.id }}" data-code="{{ matiere.code }}" data-nom="{{ matiere.nom }}"
+                    data-credits="{{ matiere.credits }}" data-semestre="{{ matiere.semestre }}"
+                    data-filiere="{{ matiere.filiere }}">
+                    ✏️ Modifier
+                </button>
+                <button class="btn btn-danger delete-btn" data-id="{{ matiere.id }}">🗑️ Supprimer</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- MODAL AJOUT MATIÈRE -->
+<div class="modal fade" id="modalMatiere" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ajouter une Matière</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formMatiere">
+                    <div class="mb-3">
+                        <label>Code</label>
+                        <input type="text" id="code" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Nom</label>
+                        <input type="text" id="nom" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Crédits</label>
+                        <input type="number" id="credits" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Semestre</label>
+                        <input type="number" id="semestre" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Filière</label>
+                        <input type="text" id="filiere" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL MODIFICATION MATIÈRE -->
+<div class="modal fade" id="modalEditMatiere" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modifier une Matière</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditMatiere">
+                    <input type="hidden" id="edit_id">
+                    <div class="mb-3">
+                        <label>Code</label>
+                        <input type="text" id="edit_code" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Nom</label>
+                        <input type="text" id="edit_nom" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Crédits</label>
+                        <input type="number" id="edit_credits" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Semestre</label>
+                        <input type="number" id="edit_semestre" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Filière</label>
+                        <input type="text" id="edit_filiere" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning">Mettre à Jour</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT AJAX -->
+
+<!-- Bootstrap Bundle (nécessaire pour les modals) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function(){
+
+    // ✅ AJOUTER MATIÈRE
+    $("#formMatiere").submit(function(event){
+        event.preventDefault();
+        let data = {
+            code: $("#code").val(),
+            nom: $("#nom").val(),
+            credits: $("#credits").val(),
+            semestre: $("#semestre").val(),
+            filiere: $("#filiere").val()
+        };
+
+        $.ajax({
+            url: "{% url 'ajouter_matiere' %}",
+            type: "POST",
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            success: function(response){
+                alert(response.message);
+                location.reload();
+            }
+        });
+    });
+
+    // ✅ MODIFIER MATIÈRE
+    $(".edit-btn").click(function(){
+        let matiereId = $(this).data("id");
+        $("#edit_id").val(matiereId);
+        $("#edit_code").val($(this).data("code"));
+        $("#edit_nom").val($(this).data("nom"));
+        $("#edit_credits").val($(this).data("credits"));
+        $("#edit_semestre").val($(this).data("semestre"));
+        $("#edit_filiere").val($(this).data("filiere"));
+    });
+
+    $("#formEditMatiere").submit(function(event){
+        event.preventDefault();
+        let data = {
+            id: $("#edit_id").val(),
+            code: $("#edit_code").val(),
+            nom: $("#edit_nom").val(),
+            credits: $("#edit_credits").val(),
+            semestre: $("#edit_semestre").val(),
+            filiere: $("#edit_filiere").val()
+        };
+
+        $.ajax({
+            url: "{% url 'modifier_matiere' %}",
+            type: "POST",
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            success: function(response){
+                alert(response.message);
+                location.reload();
+            }
+        });
+    });
+
+    // ✅ SUPPRIMER MATIÈRE
+    $(".delete-btn").click(function(){
+        let matiereId = $(this).data("id");
+        if(confirm("Voulez-vous vraiment supprimer cette matière ?")){
+            $.ajax({
+                url: "{% url 'supprimer_matiere' %}",
+                type: "POST",
+                data: JSON.stringify({"id": matiereId}),
+                contentType: "application/json",
+                success: function(response){
+                    alert(response.message);
+                    location.reload();
+                }
+            });
+        }
+    });
+});
+</script>
+
+{% endblock %}
